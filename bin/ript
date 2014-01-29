@@ -30,6 +30,7 @@ def types
     :a => 'filter',
     :d => 'nat',
     :s => 'nat',
+    :p => 'raw',
   }
 end
 
@@ -107,10 +108,8 @@ if ARGV[0] == 'rules'
       end
     end
 
-    # everything below requires root
-    root?
-
     if ARGV[1] == "diff"
+      root?
       @partitions.each do |partition|
         # We assume here that if a partition has a partition-a chain it will have all the others
         chain_name = "#{partition.name}-#{partition.id.split('-').first}".sub(/-/, '-a')
@@ -125,6 +124,7 @@ if ARGV[0] == 'rules'
   end
 
   if ARGV[1] == "apply" then
+    root?
     output   = `#{$0} rules diff #{ARGV[2..-1].join(' ')} 2>&1`
     tempfile = Tempfile.open("ript-apply-#{Time.now.to_i}") {|f| f << output}
     puts "#{output}"
@@ -133,6 +133,7 @@ if ARGV[0] == 'rules'
   end
 
   if ARGV[1] == 'save' then
+    root?
     system('/sbin/iptables-save')
     exit
   end
